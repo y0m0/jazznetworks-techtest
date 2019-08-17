@@ -13,13 +13,30 @@
 // store line coordinates
 var line = {};
 
+// create a svg line element
+var svgLine = document.createElementNS("http://www.w3.org/2000/svg", 'line');
+
+function intializeLine() {
+  var svg = document.getElementsByTagName('svg')[0];
+  svgLine.setAttribute('stroke', 'black');
+  svgLine.setAttribute('x1', line.x1);
+  svgLine.setAttribute('y1', line.y1);
+  svg.appendChild(svgLine);
+}
+
 function onMouseDown(event) {
-  line.x1 = event.clientX;
-  line.y1 = event.clientY;
+  line.x1 = event.offsetX;
+  line.y1 = event.offsetY;
+
+  intializeLine();
+
 }
 
 function onMouseMove(event) {
-    //Add code here
+  line.x2 = event.offsetX;
+  line.y2 = event.offsetY;
+  svgLine.setAttribute('x2', line.x2);
+  svgLine.setAttribute('y2', line.y2);
 }
 
 function onMouseUp(event) {
@@ -28,15 +45,13 @@ function onMouseUp(event) {
 
   //Generate the two sets of points for the split polygons
   //An algorithm for finding interceptions of two lines can be found in https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
-  line.x2 = event.clientX;
-  line.y2 = event.clientY
 
-  console.log(line)
 
   clearPoly();
   addPoly(poly1, 'blue');
   addPoly(poly2, 'green');
 }
+
 
 /*
 	Code below this line shouldn't need to be changed
@@ -66,6 +81,7 @@ function addPoly(points, color = 'black') {
     svgElement.setAttribute('width', "500");
     svgElement.setAttribute('style', 'position: absolute;');
     svgElement.setAttribute('fill', 'transparent');
+    svgElement.setAttribute('border', '1px solid black');
     
     svgElement.appendChild(svgPath);
     content.appendChild(svgElement);
@@ -99,31 +115,4 @@ const points = [
 ]
 
 window.onload = () => setup()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
