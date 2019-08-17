@@ -10,8 +10,12 @@
     to provide a solution using react/angular/vue/etc if you prefer.
 */
 
+// store line coordinates
+var line = {};
+
 function onMouseDown(event) {
-    //Add code here
+  line.x1 = event.clientX;
+  line.y1 = event.clientY;
 }
 
 function onMouseMove(event) {
@@ -19,15 +23,19 @@ function onMouseMove(event) {
 }
 
 function onMouseUp(event) {
-    const poly1 = [];
-    const poly2 = [];
+  const poly1 = [];
+  const poly2 = [];
 
-    //Generate the two sets of points for the split polygons
-    //An algorithm for finding interceptions of two lines can be found in https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+  //Generate the two sets of points for the split polygons
+  //An algorithm for finding interceptions of two lines can be found in https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+  line.x2 = event.clientX;
+  line.y2 = event.clientY
 
-    clearPoly();
-    addPoly(poly1, 'blue');
-    addPoly(poly2, 'green');
+  console.log(line)
+
+  clearPoly();
+  addPoly(poly1, 'blue');
+  addPoly(poly2, 'green');
 }
 
 /*
