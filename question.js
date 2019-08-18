@@ -15,6 +15,7 @@ var line = {};
 // create a svg line element
 var svgLine = document.createElementNS("http://www.w3.org/2000/svg", 'line');
 
+//create and append a new line on the pre-exsisting svg
 function intializeLine() {
   var svg = document.getElementsByTagName('svg')[0];
   svgLine.setAttribute('stroke', 'black');
@@ -23,13 +24,11 @@ function intializeLine() {
   svg.appendChild(svgLine);
 }
 
-
 function onMouseDown(event) {
   line.x1 = event.offsetX;
   line.y1 = event.offsetY;
 
   intializeLine();
-
 }
 
 function onMouseMove(event) {
@@ -49,8 +48,8 @@ function onMouseUp(event) {
   const polygon = [...points, points[0]];
 
   // flags to check when and if we encouter any intersection
-  isIntersection1 = false;
-  isIntersection2 = false;
+  var isIntersection1 = false;
+  var isIntersection2 = false;
 
 
   polygon.forEach(function(point, i, points) {
@@ -58,22 +57,18 @@ function onMouseUp(event) {
 
       let inter = checkIntersection(line, point, points[i+1]);
 
-      if (!inter && !isIntersection1) {
-        poly1.push(point);
-      } else if (inter && !isIntersection1) {
+      if (inter && !isIntersection1) {
         poly1.push(point, inter);
         poly2.push(inter);
         isIntersection1 = true;
-      } else if (!inter && isIntersection1 && !isIntersection2) {
-        poly2.push(point);
       } else if(inter && isIntersection1 && !isIntersection2) {
         poly2.push(point, inter);
         poly1.push(inter);
         isIntersection2 = true;
-      } else if (!inter & isIntersection1 & isIntersection2) {
-        poly1.push(point);
+      } else if (!inter && isIntersection1 && !isIntersection2) {
+        poly2.push(point);
       } else {
-        return;
+        poly1.push(point);
       }
     }
   });
