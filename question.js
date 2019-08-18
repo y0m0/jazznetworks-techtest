@@ -1,4 +1,3 @@
-
 /*
     The goal of this exercise is to take a polygon defined by the points 'points', use the mouse
     events to draw a line that will split the polygon and then draw the two split polygons.
@@ -44,20 +43,50 @@ function onMouseUp(event) {
   const poly1 = [];
   const poly2 = [];
 
-  // we create polygon as a copy of points but we append the first point to it to check against the last polygon segment,
-  // this is just to avoid conditions and duplication of logic in the for loop.
+  // we create polygon as a copy of points but we append the first point to it in order to also check against the last polygon segment,
+  // this is just to avoid to declare extra conditions and duplication of logic in the loop.
   // Iterate over each consecutive set of points in the polygon to check if they intersect with the drawn segment
   const polygon = [...points, points[0]];
 
-  for (var i=0; i < polygon.length -1; i++ ) {
-    checkIntersection(line, polygon[i], polygon[i+1]);
-  }
+  // flags to check when and if we encouter any intersection
+  isIntersection1 = false;
+  isIntersection2 = false;
 
 
+  polygon.forEach(function(point, i, points) {
+    if (i < points.length -1) {
+
+      let inter = checkIntersection(line, point, points[i+1]);
+
+      if (!inter && !isIntersection1) {
+        poly1.push(point);
+      } else if (inter && !isIntersection1) {
+        poly1.push(point, inter);
+        poly2.push(inter);
+        isIntersection1 = true;
+      } else if (!inter && isIntersection1 && !isIntersection2) {
+        poly2.push(point);
+      } else if(inter && isIntersection1 && !isIntersection2) {
+        poly2.push(point, inter);
+        poly1.push(inter);
+        isIntersection2 = true;
+      } else if (!inter & isIntersection1 & isIntersection2) {
+        poly1.push(point);
+      } else {
+        return;
+      }
+    }
+  });
 
   clearPoly();
-  addPoly(poly1, 'blue');
-  addPoly(poly2, 'green');
+
+  //check if we have at least 2 intersections, if not return the inital polygon
+  if (!isIntersection1 || !isIntersection2) {
+    addPoly(points, 'black');
+  } else {
+    addPoly(poly1, 'blue');
+    addPoly(poly2, 'green');
+  }
 }
 
 
@@ -98,6 +127,8 @@ function checkIntersection(line, polygonPoint, polygonNextPoint) {
 
     return {x: intersectionX, y: intersectionY};
   }
+
+  return false;
 }
 
 
