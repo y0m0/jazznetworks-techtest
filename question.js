@@ -24,6 +24,7 @@ function intializeLine() {
   svg.appendChild(svgLine);
 }
 
+
 function onMouseDown(event) {
   line.x1 = event.offsetX;
   line.y1 = event.offsetY;
@@ -43,13 +44,63 @@ function onMouseUp(event) {
   const poly1 = [];
   const poly2 = [];
 
-  //Generate the two sets of points for the split polygons
-  //An algorithm for finding interceptions of two lines can be found in https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+  // iterate over each consecutive set of points in the polygon to check
+  // if they intersect with the drawn segment
+  for (var i=0; i < points.length; i++ ) {
+    // we would usually end the loop at points.length -1 to avoid going out the
+    // array boundaries but we need to run the loop one extra time to also check V[-1] with V[0]
+     if (i===points.length -1 ) {
+       checkIntersection(line, points[i], points[0]);
+     } else {
+       checkIntersection(line, points[i], points[i+1]);
+     }
+   }
+
 
 
   clearPoly();
   addPoly(poly1, 'blue');
   addPoly(poly2, 'green');
+}
+
+
+/*
+   We can check if two segments intersect by:
+   1. computing the line equation for each segment
+   2. find the point of intersection of the lines
+   3. check if the intersection is on both segments
+   We have to run this for each possible pairs of segments which give use a complexity of O(n2).
+   There are more efficient approaches like the sweep line algorithm O(nlogn).
+   But for the purpose of this exercise, given the relatively small amount of segments to check we can use this 'bruteforce' approach.
+   This is still pretty fast because we are only using simple mathematical operations and comparisons.
+*/
+function checkIntersection(line, polygonPoint, polygonNextPoint) {
+  var p1 = { x: line.x1, y: line.y1 };
+  var p2 = { x: line.x2, y: line.y2 };
+  var p3 = { x: polygonPoint.x, y: polygonPoint.y };
+  var p4 = { x: polygonNextPoint.x, y: polygonNextPoint.y };
+
+
+  var delta0 = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);
+
+  // if delta0 is 0 then the 2 segments are parallel, so interesction can occour
+  if (delta0 === 0) {
+    return false;
+  }
+
+  var delta1 = (p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x);
+
+  var delta2 = (p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x);
+
+  var ka = delta1 / delta0;
+  var kb = delta2 / delta0;
+
+  if ((ka >= 0 && ka <= 1) && (kb >= 0 && kb <= 1)) {
+    var intersectionX = p1.x + ka * (p2.x - p1.x);
+    var intersectionY = p1.y + ka * (p2.y - p1.y);
+
+    return {x: intersectionX, y: intersectionY};
+  }
 }
 
 
@@ -115,4 +166,3 @@ const points = [
 ]
 
 window.onload = () => setup()
-
