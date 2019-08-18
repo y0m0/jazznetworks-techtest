@@ -44,17 +44,14 @@ function onMouseUp(event) {
   const poly1 = [];
   const poly2 = [];
 
-  // iterate over each consecutive set of points in the polygon to check
-  // if they intersect with the drawn segment
-  for (var i=0; i < points.length; i++ ) {
-    // we would usually end the loop at points.length -1 to avoid going out the
-    // array boundaries but we need to run the loop one extra time to also check V[-1] with V[0]
-     if (i===points.length -1 ) {
-       checkIntersection(line, points[i], points[0]);
-     } else {
-       checkIntersection(line, points[i], points[i+1]);
-     }
-   }
+  // we create polygon as a copy of points but we append the first point to it to check against the last polygon segment,
+  // this is just to avoid conditions and duplication of logic in the for loop.
+  // Iterate over each consecutive set of points in the polygon to check if they intersect with the drawn segment
+  const polygon = [...points, points[0]];
+
+  for (var i=0; i < polygon.length -1; i++ ) {
+    checkIntersection(line, polygon[i], polygon[i+1]);
+  }
 
 
 
